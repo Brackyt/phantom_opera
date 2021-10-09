@@ -57,9 +57,9 @@ class Player():
         minimum_indexes = []
 
         for i in range(len(self.data)):
-            for case in self.map:
-                if self.data[i]["color"] in case:
-                    characters[i] = len(case)
+            for room in self.map:
+                if self.data[i]["color"] in room:
+                    characters[i] = len(room)
 
         minimum = min(characters)        
         [minimum_indexes.append(i) for i in range(len(characters)) if characters[i] == minimum]
@@ -69,30 +69,46 @@ class Player():
     def select_character(self):
         isolated_characters = self.get_isolated_characters()
         choice = random.choice(isolated_characters)
-        print(choice)
         return choice
 
+    def get_most_full_rooms(self):
+        room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
+        size_biggest_rooms = max(room_sizes) if len(room_sizes) > 0 else 0
+        inspector_logger.debug("Size biggest room:", size_biggest_rooms)
+
+        if size_biggest_rooms == 0:
+            return [0]
+
+        most_full_rooms = []
+        [most_full_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_biggest_rooms and self.map.index(room) in self.data]
+        return most_full_rooms
+
     def select_position(self):
-        pass
+        most_full_rooms = self.get_most_full_rooms()
+        if most_full_rooms == [0]:
+            return 0
+        selected_room = random.choice(most_full_rooms)
+        inspector_logger.debug("Most full rooms:", most_full_rooms)
+        inspector_logger.debug("Selected room:", selected_room)
+        return self.data.index(selected_room)
 
     def answer(self, question):
         # work
         self.data = question["data"]
         self.game_state = question["game state"]
         self.question = question["question type"]
-        self.set_map_positions()
-        print(question["question type"])
-        print(self.map)
-        print(self.data)
-        response_index = random.randint(0, len(self.data) - 1)
-        if self.question == "select character":
-            self.select_character()
-        elif self.question == "select position":
-            self.select_position()
-        print("------------")
-        # log
+
         inspector_logger.debug("|\n|")
         inspector_logger.debug("inspector answers")
+
+        self.set_map_positions()
+        response_index = random.randint(0, len(self.data) - 1)
+        if self.question == "select character":
+            response_index = self.select_character()
+        elif self.question == "select position":
+            response_index = self.select_position()
+
+        # log
         inspector_logger.debug(f"question type ----- {question['question type']}")
         inspector_logger.debug(f"data -------------- {self.data}")
         inspector_logger.debug(f"response index ---- {response_index}")
