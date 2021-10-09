@@ -52,8 +52,25 @@ class Player():
         self.map = [[] for i in range(0, 10)]
         [self.map[char['position']].append(char['color']) for char in self.game_state['characters'] if char['suspect'] is True]
 
+    def get_isolated_characters(self):
+        characters = [0] * len(self.data)
+        minimum_indexes = []
+
+        for i in range(len(self.data)):
+            for case in self.map:
+                if self.data[i]["color"] in case:
+                    characters[i] = len(case)
+
+        minimum = min(characters)        
+        [minimum_indexes.append(i) for i in range(len(characters)) if characters[i] == minimum]
+
+        return minimum_indexes
+
     def select_character(self):
-        pass
+        isolated_characters = self.get_isolated_characters()
+        choice = random.choice(isolated_characters)
+        print(choice)
+        return choice
 
     def select_position(self):
         pass
@@ -67,12 +84,11 @@ class Player():
         print(question["question type"])
         print(self.map)
         print(self.data)
-        if self.question is "select character":
+        response_index = random.randint(0, len(self.data) - 1)
+        if self.question == "select character":
             self.select_character()
-        elif self.question is "select position":
+        elif self.question == "select position":
             self.select_position()
-        else:
-            response_index = random.randint(0, len(self.data) - 1)
         print("------------")
         # log
         inspector_logger.debug("|\n|")
