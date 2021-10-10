@@ -56,6 +56,45 @@ class Player():
         self.map = [[] for i in range(0, 10)]
         [self.map[char['position']].append(char['color']) for char in self.game_state['characters'] if char['suspect'] is True]
     
+    def get_least_full_rooms(self):
+        """
+        Gets the nearest rooms with the lowest amount of characters
+        """
+        # Create a list with the number of characters in each room
+        room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
+        # Get the number of characters in the room that contains the least
+        if len(room_sizes) > 0 :
+            size_least_rooms = min(room_sizes)
+        else :
+            size_least_rooms = 8
+        # inspector_logger.debug("Size least room:", size_biggest_rooms)
+
+        if size_least_rooms == 8:
+            return [0]
+
+        most_least_rooms = []
+        # Create list of all the rooms with size_least_rooms number of characters
+        [most_least_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_least_rooms and self.map.index(room) in self.data]
+        return most_least_rooms
+
+    def get_most_full_rooms(self):
+        """
+        Gets the rooms with the biggest amount of characters
+        """
+        # Create a list with the number of characters in each room
+        room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
+        # Get the number of characters in the room that contains the most
+        size_biggest_rooms = max(room_sizes) if len(room_sizes) > 0 else 0
+        # inspector_logger.debug("Size biggest room:", size_biggest_rooms)
+
+        if size_biggest_rooms == 0:
+            return [0]
+
+        most_full_rooms = []
+        # Create list of all the rooms with size_biggest_rooms number of characters
+        [most_full_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_biggest_rooms and self.map.index(room) in self.data]
+        return most_full_rooms
+    
     def get_least_isolated_characters(self):
         """
         Gets the characters in the rooms with the most amount of characters
@@ -77,12 +116,39 @@ class Player():
         """
         Gets a character to isolate
         """
+        i = 0
+        
+        for char in self.data:
+            if char["color"] == "grey":
+                return i
+            i += 1
         least_isolated_characters = self.get_least_isolated_characters()
         choice = random.choice(least_isolated_characters)
         return choice
 
     def select_position(self):
-        pass
+        """
+        Gets a room that contains the lowest amount of characters
+        """
+        least_full_rooms = self.get_least_full_rooms()
+        if least_full_rooms == [0]:
+            return 0
+        selected_room = random.choice(least_full_rooms)
+        # fantom_logger.debug("Least full rooms:", least_full_rooms)
+        # fantom_logger.debug("Selected room:", selected_room)
+        return self.data.index(selected_room)
+
+    def select_position2(self):
+        """
+        Gets a room that contains the biggest amount of characters
+        """
+        most_full_rooms = self.get_most_full_rooms()
+        if most_full_rooms == [0]:
+            return 0
+        selected_room = random.choice(most_full_rooms)
+        # inspector_logger.debug("Most full rooms:", most_full_rooms)
+        # inspector_logger.debug("Selected room:", selected_room)
+        return self.data.index(selected_room)
 
     def answer(self, question):
         # work
@@ -90,7 +156,8 @@ class Player():
         self.game_state = question["game state"]
         self.question = question["question type"]
         fantom_logger.debug("|\n|")
-        fantom_logger.debug("inspector answers")
+        fantom_logger.debug("fantom answers")
+        
 
         self.set_map_positions()
         response_index = random.randint(0, len(self.data) - 1)
@@ -98,7 +165,8 @@ class Player():
             response_index = self.select_character()
         elif self.question == "select position":
             response_index = self.select_position()
-        
+        elif self.question == "grey character power room":
+            response_index = self.select_position2()
         # log
         fantom_logger.debug(f"question type ----- {question['question type']}")
         fantom_logger.debug(f"data -------------- {self.data}")
