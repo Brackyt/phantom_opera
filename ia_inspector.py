@@ -88,7 +88,7 @@ class Player():
         room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
         # Get the number of characters in the room that contains the most
         size_biggest_rooms = max(room_sizes) if len(room_sizes) > 0 else 0
-        inspector_logger.debug("Size biggest room:", size_biggest_rooms)
+        # inspector_logger.debug("Size biggest room:", size_biggest_rooms)
 
         if size_biggest_rooms == 0:
             return [0]
@@ -106,8 +106,8 @@ class Player():
         if most_full_rooms == [0]:
             return 0
         selected_room = random.choice(most_full_rooms)
-        inspector_logger.debug("Most full rooms:", most_full_rooms)
-        inspector_logger.debug("Selected room:", selected_room)
+        # inspector_logger.debug("Most full rooms:", most_full_rooms)
+        # inspector_logger.debug("Selected room:", selected_room)
         return self.data.index(selected_room)
 
     def answer(self, question):
