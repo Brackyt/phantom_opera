@@ -2,9 +2,9 @@ import json
 from random import shuffle, randrange, choice
 from typing import List, Set, Union, Tuple
 
-from src.Character import Character
-from src.Player import Player
-from src.globals import logger, passages, colors
+from gabriel_src.Character import Character
+from gabriel_src.Player import Player
+from gabriel_src.globals import logger, passages, colors
 
 
 class Game:

@@ -1,7 +1,7 @@
 import json
 
 import protocol
-from src.globals import logger, clients
+from gabriel_src.globals import logger, clients
 
 """
     Functions handling exchanges between

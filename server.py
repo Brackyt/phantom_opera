@@ -1,9 +1,9 @@
 import cProfile
 import sys
 
-from src.Game import Game
-from src.Player import Player
-from src.globals import logger, clients, link
+from gabriel_src.Game import Game
+from gabriel_src.Player import Player
+from gabriel_src.globals import logger, clients, link
 
 """
     The order of connexion of the sockets is important.
