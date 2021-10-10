@@ -92,9 +92,6 @@ class Player():
         inspector_logger.debug("Selected room:", selected_room)
         return self.data.index(selected_room)
 
-    def blue_character_power_room(self):
-        pass
-
     def answer(self, question):
         # work
         self.data = question["data"]
@@ -111,7 +108,11 @@ class Player():
         elif self.question == "select position":
             response_index = self.select_position()
         elif self.question == "blue character power room":
-            response_index = self.blue_character_power_room()
+            response_index = self.select_position()
+        elif self.question == "activate white power" or self.question == "activate purple power":
+            response_index = 0
+        elif self.question == "activate black power":
+            response_index = 1
 
         # log
         inspector_logger.debug(f"question type ----- {question['question type']}")
