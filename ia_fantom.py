@@ -38,6 +38,10 @@ class Player():
         self.end = False
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.data = []
+        self.game_state = []
+        self.question_type = []
+        self.map = []
 
     def connect(self):
         self.socket.connect((host, port))
@@ -45,18 +49,61 @@ class Player():
     def reset(self):
         self.socket.close()
 
+    def set_map_positions(self):
+        """
+        Creates a list with the characters in each rooms
+        """
+        self.map = [[] for i in range(0, 10)]
+        [self.map[char['position']].append(char['color']) for char in self.game_state['characters'] if char['suspect'] is True]
+    
+    def get_least_isolated_characters(self):
+        """
+        Gets the characters in the rooms with the most amount of characters
+        """
+        characters = [0] * len(self.data)
+        maximum_indexes = []
+
+        for i in range(len(self.data)):
+            for room in self.map:
+                if self.data[i]["color"] in room:
+                    characters[i] = len(room)
+
+        maximum = max(characters)        
+        [maximum_indexes.append(i) for i in range(len(characters)) if characters[i] == maximum]
+
+        return maximum_indexes
+
+    def select_character(self):
+        """
+        Gets a character to isolate
+        """
+        least_isolated_characters = self.get_least_isolated_characters()
+        choice = random.choice(least_isolated_characters)
+        return choice
+
+    def select_position(self):
+        pass
+
     def answer(self, question):
         # work
-        data = question["data"]
-        game_state = question["game state"]
-        response_index = random.randint(0, len(data)-1)
-        # log
+        self.data = question["data"]
+        self.game_state = question["game state"]
+        self.question = question["question type"]
         fantom_logger.debug("|\n|")
-        fantom_logger.debug("fantom answers")
+        fantom_logger.debug("inspector answers")
+
+        self.set_map_positions()
+        response_index = random.randint(0, len(self.data) - 1)
+        if self.question == "select character":
+            response_index = self.select_character()
+        elif self.question == "select position":
+            response_index = self.select_position()
+        
+        # log
         fantom_logger.debug(f"question type ----- {question['question type']}")
-        fantom_logger.debug(f"data -------------- {data}")
+        fantom_logger.debug(f"data -------------- {self.data}")
         fantom_logger.debug(f"response index ---- {response_index}")
-        fantom_logger.debug(f"response ---------- {data[response_index]}")
+        fantom_logger.debug(f"response ---------- {self.data[response_index]}")
         return response_index
 
     def handle_json(self, data):

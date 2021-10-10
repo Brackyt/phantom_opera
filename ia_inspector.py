@@ -57,7 +57,7 @@ class Player():
 
     def get_isolated_characters(self):
         """
-        Gets the rooms with the least amount of characters
+        Gets the characters in the rooms with the least amount of characters
         """
         characters = [0] * len(self.data)
         minimum_indexes = []
