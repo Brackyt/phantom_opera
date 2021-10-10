@@ -49,10 +49,16 @@ class Player():
         self.socket.close()
 
     def set_map_positions(self):
+        """
+        Creates a list with the characters in each rooms
+        """
         self.map = [[] for i in range(0, 10)]
         [self.map[char['position']].append(char['color']) for char in self.game_state['characters'] if char['suspect'] is True]
 
     def get_isolated_characters(self):
+        """
+        Gets the rooms with the least amount of characters
+        """
         characters = [0] * len(self.data)
         minimum_indexes = []
 
@@ -67,12 +73,20 @@ class Player():
         return minimum_indexes
 
     def select_character(self):
+        """
+        Gets a character that is isolated
+        """
         isolated_characters = self.get_isolated_characters()
         choice = random.choice(isolated_characters)
         return choice
 
     def get_most_full_rooms(self):
+        """
+        Gets the rooms with the biggest amount of characters
+        """
+        # Create a list with the number of characters in each room
         room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
+        # Get the number of characters in the room that contains the most
         size_biggest_rooms = max(room_sizes) if len(room_sizes) > 0 else 0
         inspector_logger.debug("Size biggest room:", size_biggest_rooms)
 
@@ -80,10 +94,14 @@ class Player():
             return [0]
 
         most_full_rooms = []
+        # Create list of all the rooms with size_biggest_rooms number of characters
         [most_full_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_biggest_rooms and self.map.index(room) in self.data]
         return most_full_rooms
 
     def select_position(self):
+        """
+        Gets a room that contains the biggest amount of characters
+        """
         most_full_rooms = self.get_most_full_rooms()
         if most_full_rooms == [0]:
             return 0
