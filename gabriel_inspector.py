@@ -67,7 +67,7 @@ class Player():
                 if self.data[i]["color"] in room:
                     characters[i] = len(room)
 
-        minimum = min(characters)        
+        minimum = min(characters)
         [minimum_indexes.append(i) for i in range(len(characters)) if characters[i] == minimum]
 
         return minimum_indexes
@@ -76,6 +76,13 @@ class Player():
         """
         Gets a character that is isolated
         """
+        i = 0
+
+        for char in self.data:
+            if char["color"] == "black":
+                return i
+            i += 1
+
         isolated_characters = self.get_isolated_characters()
         choice = random.choice(isolated_characters)
         return choice
@@ -98,6 +105,27 @@ class Player():
         [most_full_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_biggest_rooms and self.map.index(room) in self.data]
         return most_full_rooms
 
+    def get_least_full_rooms(self):
+        """
+        Gets the nearest rooms with the lowest amount of characters
+        """
+        # Create a list with the number of characters in each room
+        room_sizes = [len(room) for room in self.map if self.map.index(room) in self.data]
+        # Get the number of characters in the room that contains the least
+        if len(room_sizes) > 0 :
+            size_least_rooms = min(room_sizes)
+        else :
+            size_least_rooms = 8
+        # inspector_logger.debug("Size least room:", size_biggest_rooms)
+
+        if size_least_rooms == 8:
+            return [0]
+
+        most_least_rooms = []
+        # Create list of all the rooms with size_least_rooms number of characters
+        [most_least_rooms.append(self.map.index(room)) for room in self.map if len(room) == size_least_rooms and self.map.index(room) in self.data]
+        return most_least_rooms
+
     def select_position(self):
         """
         Gets a room that contains the biggest amount of characters
@@ -108,6 +136,18 @@ class Player():
         selected_room = random.choice(most_full_rooms)
         # inspector_logger.debug("Most full rooms:", most_full_rooms)
         # inspector_logger.debug("Selected room:", selected_room)
+        return self.data.index(selected_room)
+
+    def select_position2(self):
+        """
+        Gets a room that contains the lowest amount of characters
+        """
+        least_full_rooms = self.get_least_full_rooms()
+        if least_full_rooms == [0]:
+            return 0
+        selected_room = random.choice(least_full_rooms)
+        # fantom_logger.debug("Least full rooms:", least_full_rooms)
+        # fantom_logger.debug("Selected room:", selected_room)
         return self.data.index(selected_room)
 
     def answer(self, question):
@@ -131,6 +171,8 @@ class Player():
             response_index = 0
         elif self.question == "activate black power":
             response_index = 1
+        elif self.question == "activate grey power":
+            response_index = self.select_position2()
 
         # log
         inspector_logger.debug(f"question type ----- {question['question type']}")
